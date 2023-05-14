@@ -1,10 +1,11 @@
+# Author S.G. 21.04.2023
 import os
 import requests
 import time
 from termcolor import colored
 from tabulate import tabulate
 import tabulate
-
+import urllib3
 
 previous_response = {}
 previous_response2 = {}
@@ -20,24 +21,29 @@ while True:
         table = []
         table.append(headers)
 
+
         for data in response:
-            kur = data['Symbol']
-            tcmb_alis = "{:.4f}".format(float(data['CentralBuy']))
-            tcmb_satis = "{:.4f}".format(float(data['CentralSell']))
-            piyasa_alis = "{:.4f}".format(float(data['OpenBuy']))
-            piyasa_satis = "{:.4f}".format(float(data['OpenSell']))
-            hsbc_alis = "{:.4f}".format(float(data['HsbcBuy']))
-            hsbc_satis = "{:.4f}".format(float(data['HsbcSell']))
+            # print(data)
+            if not 'CentralBuy' in data:
+                continue
+            else:
+                kur = data['Symbol']
+                tcmb_alis = "{:.4f}".format(float(data['CentralBuy']))
+                tcmb_satis = "{:.4f}".format(float(data['CentralSell']))
+                piyasa_alis = "{:.4f}".format(float(data['OpenBuy']))
+                piyasa_satis = "{:.4f}".format(float(data['OpenSell']))
+                hsbc_alis = "{:.4f}".format(float(data['HsbcBuy']))
+                hsbc_satis = "{:.4f}".format(float(data['HsbcSell']))
 
-            previous_kur = previous_response.get(kur, [])
-            previous_tcmb_alis = previous_kur[0] if previous_kur else tcmb_alis
-            previous_tcmb_satis = previous_kur[1] if previous_kur else tcmb_satis
-            previous_piyasa_alis = previous_kur[2] if previous_kur else piyasa_alis
-            previous_piyasa_satis = previous_kur[3] if previous_kur else piyasa_satis
-            previous_hsbc_alis = previous_kur[4] if previous_kur else hsbc_alis
-            previous_hsbc_satis = previous_kur[5] if previous_kur else hsbc_satis
+                previous_kur = previous_response.get(kur, [])
+                previous_tcmb_alis = previous_kur[0] if previous_kur else tcmb_alis
+                previous_tcmb_satis = previous_kur[1] if previous_kur else tcmb_satis
+                previous_piyasa_alis = previous_kur[2] if previous_kur else piyasa_alis
+                previous_piyasa_satis = previous_kur[3] if previous_kur else piyasa_satis
+                previous_hsbc_alis = previous_kur[4] if previous_kur else hsbc_alis
+                previous_hsbc_satis = previous_kur[5] if previous_kur else hsbc_satis
 
-            row = [kur, tcmb_alis, tcmb_satis, piyasa_alis, piyasa_satis, hsbc_alis, hsbc_satis]
+                row = [kur, tcmb_alis, tcmb_satis, piyasa_alis, piyasa_satis, hsbc_alis, hsbc_satis]
 
             # Tablodaki her bir değer için önceki değerle karşılaştırma yaparak renkli yazdırma
             for i, value in enumerate([tcmb_alis, tcmb_satis, piyasa_alis, piyasa_satis, hsbc_alis, hsbc_satis]):
@@ -100,10 +106,9 @@ while True:
 
         # os.system('cls')
         print(colored("HSBC ALTIN KURLARI", "blue", attrs=['bold']))
-        print(tabulate.tabulate(table2, headers=["Symbol", "Alış", "Satış"], tablefmt="pretty", stralign="left"))
+        print(tabulate.tabulate(table2, headers=["Sembol", "Alış", "Satış"], tablefmt="pretty", stralign="left"))
 
         time.sleep(5)
-
 
     except requests.exceptions.ReadTimeout:
         print("Timeout hatası! İstek zaman aşımına uğradı.")
